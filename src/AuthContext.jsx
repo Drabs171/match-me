@@ -33,10 +33,15 @@ export function AuthProvider({ children }) {
       },
     });
 
-    if (error) {
-      return { success: false, error: error.message };
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      return { success: false, error: 'An account with this email already exists.' };
     }
-    return { success: true };
+
+    if (data.user && !data.session) {
+      return { success: true, requiresEmailConfirmation: true };
+    }
+
+    return { success: true, requiresEmailConfirmation: false };
   }
 
   async function login(email, password) {

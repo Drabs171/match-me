@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { Mail, Lock, User, ArrowRight, Sparkles, Shield, Target, Zap } from 'lucide-react';
 import './AuthPage.css';
@@ -11,9 +11,16 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
-  const { signup, login } = useAuth();
+  const { signup, login, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -44,18 +51,43 @@ export default function AuthPage() {
 
     let result;
     if (isLogin) {
-      result = login(email.trim(), password);
+      result = await login(email.trim(), password);
     } else {
-      result = signup(name.trim(), email.trim(), password);
+      result = await signup(name.trim(), email.trim(), password);
     }
 
     if (result.success) {
-      navigate('/dashboard');
+      if (result.requiresEmailConfirmation) {
+        setEmailSent(true);
+      } else {
+        navigate('/dashboard');
+      }
     } else {
-      setError(result.error);
+      setError(result.error || 'An unexpected error occurred.');
     }
 
     setIsSubmitting(false);
+  }
+
+  if (emailSent) {
+    return (
+      <main className="auth-page" id="auth-page">
+        <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
+          <Sparkles size={48} style={{ color: 'var(--primary)' }} />
+          <h2 style={{ marginTop: '24px' }}>Check Your Email</h2>
+          <p style={{ marginTop: '12px', fontSize: '1.1rem', color: 'var(--text-muted)', maxWidth: '400px' }}>
+            We sent a verification link to <strong>{email}</strong>. Click it to verify your account and access your dashboard.
+          </p>
+          <button 
+            className="btn btn-primary" 
+            style={{ marginTop: '24px' }}
+            onClick={() => setEmailSent(false)}
+          >
+            ← Back to Login
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (
