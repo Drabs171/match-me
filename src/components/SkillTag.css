@@ -1,0 +1,31 @@
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.skill-tag-detected {
+  background: var(--accent-light);
+  color: var(--primary-dark);
+  border: 1px solid var(--accent);
+}
+
+.skill-tag-missing {
+  background: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid #FECACA;
+}
+
+.skill-tag-icon {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.skill-tag:hover {
+  transform: translateY(-1px);
+}

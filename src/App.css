@@ -1,0 +1,10 @@
+/* App-level layout — kept minimal, design system lives in index.css */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}

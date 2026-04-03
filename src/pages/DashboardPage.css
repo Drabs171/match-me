@@ -1,0 +1,445 @@
+.dashboard {
+  padding: 40px 0 80px;
+  min-height: calc(100vh - 64px);
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-header h2 { margin-bottom: 4px; }
+.dashboard-header p { font-size: 1rem; }
+
+/* ─── Upload Hero ─── */
+.upload-hero {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hero-text {
+  text-align: center;
+}
+
+.hero-text h2 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--charcoal);
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.hero-subtitle strong {
+  color: var(--forest);
+  font-weight: 600;
+}
+
+/* Upload Card */
+.upload-card {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.upload-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--forest);
+  margin-bottom: 1rem;
+}
+
+.upload-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ─── Refine Section ─── */
+.refine-section {
+  width: 100%;
+}
+
+.refine-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.refine-toggle:hover {
+  border-color: var(--forest);
+  color: var(--forest);
+}
+
+.refine-toggle.open {
+  border-color: var(--forest);
+  color: var(--forest);
+  background: rgba(168, 230, 207, 0.06);
+  border-style: solid;
+}
+
+.refine-toggle span:first-of-type {
+  flex: 1;
+  text-align: left;
+}
+
+.filter-active-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--forest);
+  flex-shrink: 0;
+}
+
+/* Refine Form */
+.refine-form {
+  margin-top: 0.6rem;
+  padding: 1.2rem;
+}
+
+.refine-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.refine-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.refine-field label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 0.3rem;
+}
+
+.refine-field label svg {
+  color: var(--forest);
+}
+
+.refine-field input,
+.refine-field select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.refine-field input:focus,
+.refine-field select:focus {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(31, 122, 99, 0.08);
+}
+
+.refine-field input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.refine-active {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.refine-active-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.55rem;
+  background: var(--light-green);
+  color: var(--forest);
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+/* ─── How It Works ─── */
+.how-it-works {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.how-step {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.how-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--light-green);
+  color: var(--forest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.how-arrow {
+  color: var(--border);
+  flex-shrink: 0;
+}
+
+/* ─── Results Grid ─── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* Left Panel */
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 84px;
+}
+
+.dashboard-score-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  gap: 16px;
+}
+
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-experience {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.score-education {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.dashboard-skills {
+  padding: 20px;
+}
+
+.dashboard-skills h4 {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboard-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedback-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feedback-toggle h4 { font-size: 0.95rem; }
+
+.brutal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.brutal-toggle:hover {
+  background: var(--surface);
+}
+
+.brutal-toggle.active {
+  background: #1A1A1A;
+  color: #F59E0B;
+  border-color: #1A1A1A;
+}
+
+/* Right Panel */
+.dashboard-right {
+  min-width: 0;
+}
+
+.jobs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.jobs-header h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.jobs-summary {
+  display: flex;
+  gap: 8px;
+}
+
+.jobs-sort {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  opacity: 0.9;
+  transition: all 0.2s;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  opacity: 1;
+  background-color: var(--accent-light);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.refresh-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border);
+  text-align: center;
+}
+
+.jobs-sort select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-left {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .refine-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .how-it-works {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,70 @@
+.cv-feedback-panel {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.feedback-brutal-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #1A1A1A, #2D2D2D);
+  color: #F59E0B;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.feedback-section {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.feedback-section:last-child {
+  border-bottom: none;
+}
+
+.feedback-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.feedback-strengths-title { color: var(--success); }
+.feedback-weaknesses-title { color: var(--warning); }
+.feedback-suggestions-title { color: var(--primary); }
+
+.feedback-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.feedback-item.brutal {
+  font-weight: 500;
+  color: var(--danger);
+}
+
+.feedback-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}

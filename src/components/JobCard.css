@@ -1,0 +1,131 @@
+.job-card {
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.job-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.job-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.job-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.job-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.job-card-company,
+.job-card-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.job-card-strengths {
+  background: var(--accent-light);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+
+.job-card-strengths-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.job-card-strengths-text {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.job-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.job-card-arrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all var(--transition);
+}
+
+.job-card:hover .job-card-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ─── Bookmark Button ─── */
+.bookmark-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.bookmark-btn:hover {
+  border-color: var(--forest);
+  color: var(--forest);
+  background: rgba(168, 230, 207, 0.1);
+}
+
+.bookmark-btn.bookmarked {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: white;
+}
+
+.bookmark-btn.bookmarked:hover {
+  background: #145a42;
+  border-color: #145a42;
+  color: white;
+}
+
+.bookmark-btn svg {
+  transition: transform 0.2s;
+}
+
+.bookmark-btn.bookmarked svg {
+  fill: currentColor;
+}
+
+.bookmark-btn:active svg {
+  transform: scale(0.85);
+}
