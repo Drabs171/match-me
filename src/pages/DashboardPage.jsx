@@ -15,13 +15,20 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [resumeData, setResumeData] = useState(null);
-  const [resumeText, setResumeText] = useState('');
-  const [jobs, setJobs] = useState([]);
+  const [resumeData, setResumeData] = useState(() => JSON.parse(sessionStorage.getItem('matchme_resumeData')) || null);
+  const [resumeText, setResumeText] = useState(() => sessionStorage.getItem('matchme_resumeText') || '');
+  const [jobs, setJobs] = useState(() => JSON.parse(sessionStorage.getItem('matchme_jobs')) || []);
   const [brutalMode, setBrutalMode] = useState(false);
   const [sortBy, setSortBy] = useState('match');
   const [jobPage, setJobPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Persist State to Session Storage
+  useEffect(() => {
+    if (resumeData) sessionStorage.setItem('matchme_resumeData', JSON.stringify(resumeData));
+    if (resumeText) sessionStorage.setItem('matchme_resumeText', resumeText);
+    if (jobs.length > 0) sessionStorage.setItem('matchme_jobs', JSON.stringify(jobs));
+  }, [resumeData, resumeText, jobs]);
 
   // Search refinement
   const [showFilters, setShowFilters] = useState(false);
@@ -320,6 +327,13 @@ export default function DashboardPage() {
                     feedback={brutalMode ? resumeData.brutalFeedback : resumeData.feedback}
                     brutalMode={brutalMode}
                   />
+                  <button 
+                    className="btn btn-ghost" 
+                    style={{ width: '100%', marginTop: '16px', color: 'var(--danger)' }}
+                    onClick={handleClearSession}
+                  >
+                    Upload a different CV
+                  </button>
                 </div>
               </div>
 
