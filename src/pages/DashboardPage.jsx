@@ -11,7 +11,7 @@ import JobCard from '../components/JobCard';
 import { mockResumeAnalysis, mockJobs } from '../mockData';
 import './DashboardPage.css';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);

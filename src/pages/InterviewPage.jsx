@@ -11,7 +11,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import './InterviewPage.css';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function InterviewPage() {
   const { jobId } = useParams();

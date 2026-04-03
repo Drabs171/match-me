@@ -6,7 +6,7 @@ import SkillTag from '../components/SkillTag';
 import { mockCVRewrite, mockJobs } from '../mockData';
 import './JobDetailPage.css';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function JobDetailPage() {
   const { jobId } = useParams();
