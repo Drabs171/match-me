@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Search, SlidersHorizontal, Zap, ZapOff, ChevronDown, ChevronUp,
   MapPin, DollarSign, Briefcase, Sparkles, ArrowRight, RefreshCw
