@@ -125,8 +125,8 @@ async function fetchMultipleQueries(queries, location, page = 1) {
   const allJobs = new Map();
   const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
-  // Run queries sequentially with delay (max 3 to keep latency reasonable)
-  const queryList = queries.slice(0, 3);
+  // Run queries sequentially with delay (max 4 to get a broad pool of ~40 jobs)
+  const queryList = queries.slice(0, 4);
   console.log(`  → Searching (page ${page}):`, queryList);
 
   for (const query of queryList) {
@@ -144,15 +144,16 @@ async function fetchMultipleQueries(queries, location, page = 1) {
 
   const jobs = [...allJobs.values()];
 
-  // If we got results, return up to 15
+  // Return the entire broad pool (usually 20-40 jobs)
+  // The matching engine will score all of them and we pick the top 15 highest scoring later!
   if (jobs.length > 0) {
-    return jobs.slice(0, 15);
+    return jobs;
   }
 
   // If first queries returned nothing, try remaining ones
-  if (queries.length > 3) {
-    console.log(`  → First batch empty, trying (page ${page}):`, queries.slice(3));
-    for (const query of queries.slice(3)) {
+  if (queries.length > 4) {
+    console.log(`  → First batch empty, trying (page ${page}):`, queries.slice(4));
+    for (const query of queries.slice(4)) {
       await delay(300);
       const jobs = await fetchFromJSearch({ role: query, location, experienceLevel: '', page });
       for (const job of jobs) {
