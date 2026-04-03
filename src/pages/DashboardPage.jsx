@@ -8,27 +8,23 @@ import MatchScoreCircle from '../components/MatchScoreCircle';
 import SkillTag from '../components/SkillTag';
 import CVFeedbackPanel from '../components/CVFeedbackPanel';
 import JobCard from '../components/JobCard';
-import { mockResumeAnalysis, mockJobs } from '../mockData';
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../AuthContext';
 import './DashboardPage.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [resumeData, setResumeData] = useState(() => JSON.parse(sessionStorage.getItem('matchme_resumeData')) || null);
   const [resumeText, setResumeText] = useState(() => sessionStorage.getItem('matchme_resumeText') || '');
   const [jobs, setJobs] = useState(() => JSON.parse(sessionStorage.getItem('matchme_jobs')) || []);
+  const [pastResumes, setPastResumes] = useState([]);
   const [brutalMode, setBrutalMode] = useState(false);
   const [sortBy, setSortBy] = useState('match');
   const [jobPage, setJobPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Persist State to Session Storage
-  useEffect(() => {
-    if (resumeData) sessionStorage.setItem('matchme_resumeData', JSON.stringify(resumeData));
-    if (resumeText) sessionStorage.setItem('matchme_resumeText', resumeText);
-    if (jobs.length > 0) sessionStorage.setItem('matchme_jobs', JSON.stringify(jobs));
-  }, [resumeData, resumeText, jobs]);
 
   // Search refinement
   const [showFilters, setShowFilters] = useState(false);
@@ -37,6 +33,45 @@ export default function DashboardPage() {
   const [searchSpecialization, setSearchSpecialization] = useState('');
 
   const hasFilters = searchLocation || searchPayRange || searchSpecialization;
+
+  // Persist State to Session Storage
+  useEffect(() => {
+    if (resumeData) sessionStorage.setItem('matchme_resumeData', JSON.stringify(resumeData));
+    if (resumeText) sessionStorage.setItem('matchme_resumeText', resumeText);
+    if (jobs.length > 0) sessionStorage.setItem('matchme_jobs', JSON.stringify(jobs));
+  }, [resumeData, resumeText, jobs]);
+
+  function loadPastResume(pr) {
+    setResumeText(pr.resume_text);
+    setResumeData(pr.parsed_data);
+  }
+
+  function handleClearSession() {
+    sessionStorage.removeItem('matchme_resumeData');
+    sessionStorage.removeItem('matchme_resumeText');
+    sessionStorage.removeItem('matchme_jobs');
+    setResumeData(null);
+    setResumeText('');
+    setJobs([]);
+    loadPastResumes(); // Reload past resumes list when clearing
+  }
+
+  // Fetch Past Resumes
+  useEffect(() => {
+    if (user && !resumeData) {
+      loadPastResumes();
+    }
+  }, [user, resumeData]);
+
+  async function loadPastResumes() {
+    const { data } = await supabase
+      .from('user_resumes')
+      .select('id, resume_name, created_at, parsed_data, resume_text')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    if (data) setPastResumes(data);
+  }
 
   const handleFileAccepted = useCallback(async (file) => {
     setIsLoading(true);
@@ -54,6 +89,16 @@ export default function DashboardPage() {
         const data = await res.json();
         setResumeText(data.resumeText || '');
         setResumeData(data);
+
+        // Async save to Supabase history so they don't have to rescan later
+        if (user) {
+          await supabase.from('user_resumes').insert([{
+            user_id: user.id,
+            resume_name: file.name,
+            resume_text: data.resumeText || '',
+            parsed_data: data
+          }]);
+        }
 
         // Build job search params — CV-aware + optional filters
         const jobSearchBody = {
@@ -78,26 +123,16 @@ export default function DashboardPage() {
           if (matchRes.ok) {
             const matchData = await matchRes.json();
             setJobs(matchData.jobs);
-          } else {
-            setJobs(mockJobs);
           }
-        } else {
-          setJobs(mockJobs);
         }
-      } else {
-        setResumeData(mockResumeAnalysis);
-        setJobs(mockJobs);
       }
     } catch (err) {
-      console.log('Using mock data (API unavailable):', err.message);
-      await new Promise((r) => setTimeout(r, 2000));
-      setResumeData(mockResumeAnalysis);
-      setJobs(mockJobs);
+      console.log('Error processing resume:', err.message);
     } finally {
       setIsLoading(false);
       setJobPage(1); // Reset page on new upload
     }
-  }, [searchLocation, searchSpecialization]);
+  }, [searchLocation, searchSpecialization, user]);
 
   const handleRefreshJobs = async () => {
     if (!resumeData || isRefreshing) return;
@@ -166,16 +201,34 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Upload Card */}
-            <div className="upload-card card card-elevated">
-              <div className="upload-card-header">
-                <Sparkles size={18} />
-                <span>Drop your CV — we'll handle the rest</span>
+            <div className="upload-container">
+              <div className="dashboard-hero">
+                <h1>Ready? Let's get real.</h1>
+                <p>Upload your CV. We ignore the fluff and find exactly what roles desperately need your exact skills right now.</p>
               </div>
+
               <FileUpload onFileAccepted={handleFileAccepted} isLoading={isLoading} />
-              <p className="upload-hint">
-                We analyze your CV to find the best-matching jobs for you. No search needed.
-              </p>
+              
+              {pastResumes.length > 0 && !isLoading && (
+                <div className="past-resumes-container" style={{ marginTop: '24px', textAlign: 'left' }}>
+                  <h3 style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '12px' }}>Or select a recent scan:</h3>
+                  <div className="past-resumes-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {pastResumes.map(pr => (
+                      <button 
+                        key={pr.id} 
+                        className="btn btn-outline" 
+                        style={{ justifyContent: 'space-between', padding: '12px 16px' }}
+                        onClick={() => loadPastResume(pr)}
+                      >
+                        <span style={{ fontWeight: 500 }}>{pr.resume_name}</span>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {new Date(pr.created_at).toLocaleDateString()}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Optional Filters */}
