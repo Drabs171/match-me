@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, MapPin, Building2, Clock, DollarSign, Wand2, L
 import MatchScoreCircle from '../components/MatchScoreCircle';
 import SkillTag from '../components/SkillTag';
 import { mockCVRewrite, mockJobs } from '../mockData';
+import { useAuth } from '../AuthContext';
 import './JobDetailPage.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
@@ -14,6 +15,7 @@ export default function JobDetailPage() {
   const navigate = useNavigate();
   const [rewriteData, setRewriteData] = useState(null);
   const [isRewriting, setIsRewriting] = useState(false);
+  const { getToken } = useAuth();
 
   // Get job from navigation state or fallback to mock
   const job = location.state?.job || mockJobs.find((j) => j.id === jobId) || mockJobs[0];
@@ -22,9 +24,10 @@ export default function JobDetailPage() {
   const handleFixCV = async () => {
     setIsRewriting(true);
     try {
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/rewrite`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify({ resumeText, jobDescription: job.description, jobTitle: job.title }),
       });
       if (res.ok) {
@@ -45,9 +48,10 @@ export default function JobDetailPage() {
   const handleDownloadCV = async () => {
     if (!rewriteData?.tailoredCV) return;
     try {
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/download-cv`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify({
           tailoredCV: rewriteData.tailoredCV,
           company: job.company,

@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const multer = require('multer');
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { parseResume } = require('./services/resumeParser');
 const { fetchJobs } = require('./services/jobFetcher');
@@ -16,6 +17,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
 
 app.use(helmet());
 
@@ -40,10 +42,45 @@ const aiLimiter = rateLimit({
 app.use(cors({
   origin: FRONTEND_URL,
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(generalLimiter);
+
+// ─── JWT Authentication Middleware ───
+function requireAuth(req, res, next) {
+  if (!SUPABASE_JWT_SECRET) {
+    console.warn('⚠️  SUPABASE_JWT_SECRET not set — auth is DISABLED (dev mode)');
+    return next();
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid authorization token.' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, SUPABASE_JWT_SECRET, {
+      algorithms: ['HS256'],
+    });
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired token.' });
+  }
+}
+
+// ─── Input Validation Helpers ───
+function requireFields(fields) {
+  return (req, res, next) => {
+    const missing = fields.filter(f => !req.body[f] && req.body[f] !== 0);
+    if (missing.length > 0) {
+      return res.status(400).json({ error: `Missing required fields: ${missing.join(', ')}` });
+    }
+    next();
+  };
+}
 
 // File upload config
 const upload = multer({
@@ -71,7 +108,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Analyze resume
-app.post('/api/analyze', aiLimiter, upload.single('resume'), async (req, res) => {
+app.post('/api/analyze', requireAuth, aiLimiter, upload.single('resume'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -85,7 +122,7 @@ app.post('/api/analyze', aiLimiter, upload.single('resume'), async (req, res) =>
 });
 
 // Fetch jobs (CV-aware smart search)
-app.post('/api/jobs', aiLimiter, async (req, res) => {
+app.post('/api/jobs', requireAuth, aiLimiter, async (req, res) => {
   try {
     const { role, location, experienceLevel, resumeData, resumeText, page } = req.body;
     const jobs = await fetchJobs({ role, location, experienceLevel, resumeData, resumeText, page });
@@ -97,7 +134,7 @@ app.post('/api/jobs', aiLimiter, async (req, res) => {
 });
 
 // Match resume to jobs
-app.post('/api/match', async (req, res) => {
+app.post('/api/match', requireAuth, requireFields(['resume', 'jobs']), async (req, res) => {
   try {
     const { resume, jobs } = req.body;
     const matched = matchResumeToJobs(resume, jobs);
@@ -109,7 +146,7 @@ app.post('/api/match', async (req, res) => {
 });
 
 // Rewrite CV for a specific job
-app.post('/api/rewrite', aiLimiter, async (req, res) => {
+app.post('/api/rewrite', requireAuth, aiLimiter, requireFields(['resumeText', 'jobDescription', 'jobTitle']), async (req, res) => {
   try {
     const { resumeText, jobDescription, jobTitle } = req.body;
     const result = await rewriteCV({ resumeText, jobDescription, jobTitle });
@@ -123,7 +160,7 @@ app.post('/api/rewrite', aiLimiter, async (req, res) => {
 // ─── Interview Coach Routes ───
 
 // Generate interview prep
-app.post('/api/interview/prepare', async (req, res) => {
+app.post('/api/interview/prepare', requireAuth, aiLimiter, requireFields(['jobTitle', 'jobDescription', 'resumeText']), async (req, res) => {
   try {
     const { jobTitle, company, jobDescription, resumeText, matchScore } = req.body;
     const result = await analyzeAndGenerateInterview({ jobTitle, company, jobDescription, resumeText, matchScore });
@@ -135,7 +172,7 @@ app.post('/api/interview/prepare', async (req, res) => {
 });
 
 // Evaluate an answer
-app.post('/api/interview/evaluate', async (req, res) => {
+app.post('/api/interview/evaluate', requireAuth, aiLimiter, requireFields(['question', 'answer', 'jobTitle']), async (req, res) => {
   try {
     const { question, answer, jobTitle, company, jobDescription, resumeText, criticalMode } = req.body;
     const result = await evaluateAnswer({ question, answer, jobTitle, company, jobDescription, resumeText, criticalMode });
@@ -147,7 +184,7 @@ app.post('/api/interview/evaluate', async (req, res) => {
 });
 
 // Generate interview summary
-app.post('/api/interview/summary', async (req, res) => {
+app.post('/api/interview/summary', requireAuth, aiLimiter, requireFields(['questionsAndAnswers', 'jobTitle']), async (req, res) => {
   try {
     const { questionsAndAnswers, jobTitle, company, resumeText } = req.body;
     const result = await generateInterviewSummary({ questionsAndAnswers, jobTitle, company, resumeText });
@@ -159,7 +196,7 @@ app.post('/api/interview/summary', async (req, res) => {
 });
 
 // Generate and download a tailored CV as a .docx Word file
-app.post('/api/download-cv', async (req, res) => {
+app.post('/api/download-cv', requireAuth, requireFields(['tailoredCV']), async (req, res) => {
   try {
     const { tailoredCV, candidateName, jobTitle, company } = req.body;
     if (!tailoredCV) return res.status(400).json({ error: 'No CV text provided' });
@@ -242,14 +279,16 @@ app.post('/api/download-cv', async (req, res) => {
   }
 });
 
-// Error handler
+// Error handler — never leak internal details to clients
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: err.message || 'Internal server error' });
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, () => {
   console.log(`\n🚀 Match Me! API server running on http://localhost:${PORT}`);
-  console.log(`   Anthropic API: ${process.env.ANTHROPIC_API_KEY ? '✅ Configured' : '⚠️  Not set (using mock data)'}`);
-  console.log(`   RapidAPI:      ${process.env.RAPIDAPI_KEY ? '✅ Configured' : '⚠️  Not set (using mock data)'}\n`);
+  console.log(`   Anthropic API:    ${process.env.ANTHROPIC_API_KEY ? '✅ Configured' : '⚠️  Not set (using mock data)'}`);
+  console.log(`   RapidAPI:         ${process.env.RAPIDAPI_KEY ? '✅ Configured' : '⚠️  Not set (using mock data)'}`);
+  console.log(`   JWT Auth:         ${SUPABASE_JWT_SECRET ? '✅ Enabled' : '⚠️  DISABLED (set SUPABASE_JWT_SECRET)'}`);
+  console.log(`   CORS Origin:      ${FRONTEND_URL}\n`);
 });

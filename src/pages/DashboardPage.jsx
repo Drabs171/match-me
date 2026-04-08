@@ -15,7 +15,7 @@ import './DashboardPage.css';
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [resumeData, setResumeData] = useState(() => JSON.parse(sessionStorage.getItem('matchme_resumeData')) || null);
   const [resumeText, setResumeText] = useState(() => sessionStorage.getItem('matchme_resumeText') || '');
@@ -80,8 +80,10 @@ export default function DashboardPage() {
       const formData = new FormData();
       formData.append('resume', file);
 
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/analyze`, {
         method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         body: formData,
       });
 
@@ -110,14 +112,14 @@ export default function DashboardPage() {
 
         const jobRes = await fetch(`${API_BASE}/jobs`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
           body: JSON.stringify(jobSearchBody),
         });
         if (jobRes.ok) {
           const jobData = await jobRes.json();
           const matchRes = await fetch(`${API_BASE}/match`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
             body: JSON.stringify({ resume: data, jobs: jobData.jobs }),
           });
           if (matchRes.ok) {
@@ -149,9 +151,10 @@ export default function DashboardPage() {
         page: nextPage
       };
 
+      const token = await getToken();
       const jobRes = await fetch(`${API_BASE}/jobs`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify(jobSearchBody),
       });
 
@@ -160,7 +163,7 @@ export default function DashboardPage() {
         // Dynamically score the newly fetched jobs
         const matchRes = await fetch(`${API_BASE}/match`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
           body: JSON.stringify({ resume: resumeData, jobs: jobData.jobs }),
         });
         

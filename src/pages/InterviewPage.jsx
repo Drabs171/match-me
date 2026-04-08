@@ -17,7 +17,7 @@ export default function InterviewPage() {
   const { jobId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
 
   const job = location.state?.job || mockJobs.find((j) => j.id === jobId) || mockJobs[0];
   const resumeText = location.state?.resumeText || '';
@@ -202,9 +202,10 @@ export default function InterviewPage() {
   async function loadInterviewPrep() {
     setIsLoading(true);
     try {
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/interview/prepare`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify({
           jobTitle: job.title,
           company: job.company,
@@ -260,9 +261,10 @@ export default function InterviewPage() {
     setIsEvaluating(true);
 
     try {
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/interview/evaluate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify({
           question: currentQ.question,
           answer,
@@ -332,9 +334,10 @@ export default function InterviewPage() {
         score: lastEval?.overallScore || 0
       });
 
+      const token = await getToken();
       const res = await fetch(`${API_BASE}/interview/summary`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
         body: JSON.stringify({
           questionsAndAnswers,
           jobTitle: job.title,
