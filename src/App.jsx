@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import Navbar from './components/Navbar';
+import PrivacyConsentBanner from './components/PrivacyConsentBanner';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
@@ -17,6 +18,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Navbar />
+        <PrivacyConsentBanner />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<AuthPage />} />
