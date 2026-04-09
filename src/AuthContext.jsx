@@ -60,6 +60,21 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
   }
 
+  // Send a password-reset email; redirectTo must be whitelisted in Supabase → Auth → URL Configuration
+  async function resetPassword(email) {
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  }
+
+  // Called from ResetPasswordPage after the user lands via the email link
+  async function updatePassword(newPassword) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  }
+
   // Utility to get the current access token for backend API calls
   async function getToken() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -67,7 +82,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signup, login, logout, getToken }}>
+    <AuthContext.Provider value={{ user, isLoading, signup, login, logout, getToken, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );

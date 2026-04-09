@@ -11,6 +11,7 @@ import InterviewPage from './pages/InterviewPage';
 import InterviewHistoryPage from './pages/InterviewHistoryPage';
 import SavedJobsPage from './pages/SavedJobsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import './App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
             <ProtectedRoute><SavedJobsPage /></ProtectedRoute>
           } />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Routes>
       </Router>
     </AuthProvider>
