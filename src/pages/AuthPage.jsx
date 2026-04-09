@@ -187,6 +187,8 @@ export default function AuthPage() {
       </main>
     );
   }
+
+  if (emailSent) {
     return (
       <main className="auth-page" id="auth-page">
         <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
