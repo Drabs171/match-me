@@ -61,7 +61,16 @@ export default function JobCard({ job, index = 0, resumeText = '' }) {
             company: job.company,
             location: job.location || '',
             salary: job.salary || '',
-            match_score: job.matchScore || 0
+            match_score: job.matchScore || 0,
+            job_data: {
+              description: job.description || '',
+              applyUrl: job.applyUrl || '',
+              requirements: job.requirements || [],
+              strengths: job.strengths || [],
+              gaps: job.gaps || [],
+              posted: job.posted || '',
+              fitCategory: job.fitCategory || '',
+            }
           }]);
         setSaved(true);
       }

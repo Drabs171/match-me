@@ -39,7 +39,15 @@ export default function SavedJobsPage() {
         location: row.location,
         salary: row.salary,
         matchScore: row.match_score,
-        savedAt: row.date_saved
+        savedAt: row.date_saved,
+        // Restore full job data if it was stored
+        description: row.job_data?.description || '',
+        applyUrl: row.job_data?.applyUrl || '',
+        requirements: row.job_data?.requirements || [],
+        strengths: row.job_data?.strengths || [],
+        gaps: row.job_data?.gaps || [],
+        posted: row.job_data?.posted || '',
+        fitCategory: row.job_data?.fitCategory || '',
       }));
       setSavedJobs(mapped);
     }
