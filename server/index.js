@@ -160,7 +160,7 @@ app.post('/api/rewrite', requireAuth, aiLimiter, requireFields(['resumeText', 'j
 // ─── Interview Coach Routes ───
 
 // Generate interview prep
-app.post('/api/interview/prepare', requireAuth, aiLimiter, requireFields(['jobTitle', 'jobDescription', 'resumeText']), async (req, res) => {
+app.post('/api/interview/prepare', requireAuth, aiLimiter, requireFields(['jobTitle']), async (req, res) => {
   try {
     const { jobTitle, company, jobDescription, resumeText, matchScore } = req.body;
     const result = await analyzeAndGenerateInterview({ jobTitle, company, jobDescription, resumeText, matchScore });

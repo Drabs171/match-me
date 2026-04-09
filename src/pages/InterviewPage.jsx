@@ -27,6 +27,7 @@ export default function InterviewPage() {
   const [criticalMode, setCriticalMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [prepData, setPrepData] = useState(null);
+  const [prepError, setPrepError] = useState(null);
 
   // Practice interview state
   const [isPracticing, setIsPracticing] = useState(false);
@@ -201,6 +202,7 @@ export default function InterviewPage() {
 
   async function loadInterviewPrep() {
     setIsLoading(true);
+    setPrepError(null);
     try {
       const token = await getToken();
       const res = await fetch(`${API_BASE}/interview/prepare`, {
@@ -209,17 +211,21 @@ export default function InterviewPage() {
         body: JSON.stringify({
           jobTitle: job.title,
           company: job.company,
-          jobDescription: job.description,
-          resumeText,
+          jobDescription: job.description || '',
+          resumeText: resumeText || '',
           matchScore: job.matchScore
         }),
       });
       if (res.ok) {
         const data = await res.json();
         setPrepData(data);
+      } else {
+        const errBody = await res.json().catch(() => ({}));
+        setPrepError(errBody.error || `Server returned ${res.status}`);
       }
     } catch (err) {
       console.error('Failed to load interview prep:', err);
+      setPrepError('Could not connect to the server. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -422,6 +428,30 @@ export default function InterviewPage() {
             <Loader2 size={40} className="spinning" />
             <h2>Preparing Your Interview</h2>
             <p>Analyzing {job.company}'s culture, the {job.title} role, and your CV to generate tailored interview questions...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (prepError || !prepData) {
+    return (
+      <main className="interview-page" id="interview-page">
+        <div className="container">
+          <div className="interview-loading" style={{ textAlign: 'center' }}>
+            <AlertTriangle size={40} style={{ color: 'var(--warning)' }} />
+            <h2 style={{ marginTop: '16px' }}>Interview Prep Failed</h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '12px auto 0' }}>
+              {prepError || 'No interview data was returned. This may happen if the server is busy.'}
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '24px' }}>
+              <button className="btn btn-primary" onClick={loadInterviewPrep}>
+                <Loader2 size={15} /> Try Again
+              </button>
+              <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+                <ArrowLeft size={15} /> Go Back
+              </button>
+            </div>
           </div>
         </div>
       </main>
