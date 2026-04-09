@@ -317,30 +317,30 @@ export default function AuthPage() {
               </button>
             </form>
 
-              <div className="auth-switch">
-                <p>
-                  {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            <div className="auth-switch">
+              <p>
+                {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                <button
+                  type="button"
+                  className="auth-switch-btn"
+                  onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                >
+                  {isLogin ? 'Sign Up' : 'Sign In'}
+                </button>
+              </p>
+              {isLogin && (
+                <p style={{ marginTop: '8px' }}>
                   <button
                     type="button"
                     className="auth-switch-btn"
-                    onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                    id="forgot-password-link"
+                    onClick={() => { setView('forgot'); setForgotEmail(email); setForgotError(''); }}
                   >
-                    {isLogin ? 'Sign Up' : 'Sign In'}
+                    Forgot your password?
                   </button>
                 </p>
-                {isLogin && (
-                  <p style={{ marginTop: '8px' }}>
-                    <button
-                      type="button"
-                      className="auth-switch-btn"
-                      id="forgot-password-link"
-                      onClick={() => { setView('forgot'); setForgotEmail(email); setForgotError(''); }}
-                    >
-                      Forgot your password?
-                    </button>
-                  </p>
-                )}
-              </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
