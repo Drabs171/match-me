@@ -106,14 +106,21 @@ export default function JobDetailPage() {
               </div>
 
               <div className="job-detail-actions">
-                <a href={job.applyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  Apply Now <ExternalLink size={15} />
-                </a>
+                {job.applyUrl && job.applyUrl !== '#' ? (
+                  <a href={job.applyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                    Apply Now <ExternalLink size={15} />
+                  </a>
+                ) : (
+                  <button className="btn btn-primary" disabled style={{ opacity: 0.5 }}>
+                    Apply Now <ExternalLink size={15} />
+                  </button>
+                )}
                 <button
                   className="btn btn-secondary fix-cv-btn"
                   onClick={handleFixCV}
-                  disabled={isRewriting}
+                  disabled={isRewriting || !job.description}
                   id="fix-cv-btn"
+                  title={!job.description ? 'Re-bookmark this job from Dashboard to enable' : ''}
                 >
                   {isRewriting ? <Loader2 size={15} className="spinning" /> : <Wand2 size={15} />}
                   {isRewriting ? 'Rewriting...' : 'Fix My CV for THIS Job'}
@@ -121,7 +128,9 @@ export default function JobDetailPage() {
                 <button
                   className="btn btn-secondary interview-prep-btn"
                   onClick={() => navigate(`/interview/${jobId}`, { state: { job, resumeText } })}
+                  disabled={!job.description}
                   id="interview-prep-btn"
+                  title={!job.description ? 'Re-bookmark this job from Dashboard to enable' : ''}
                 >
                   <Brain size={15} />
                   Interview Prep
@@ -132,8 +141,23 @@ export default function JobDetailPage() {
             {/* Description */}
             <div className="card card-elevated animate-fade-in-up delay-1">
               <h3 className="detail-section-title">Job Description</h3>
-              <p className="job-description">{job.description}</p>
-              {job.requirements && (
+              {job.description ? (
+                <p className="job-description">{job.description}</p>
+              ) : (
+                <div style={{
+                  padding: '20px',
+                  background: 'var(--warning-light)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: '#92400e',
+                  fontSize: '0.9rem',
+                  lineHeight: 1.6,
+                }}>
+                  <strong>Job description unavailable.</strong> This job was saved before full data storage was supported. 
+                  To get the full experience (description, Apply link, CV rewriting, interview prep), 
+                  find this job again from the Dashboard and re-bookmark it.
+                </div>
+              )}
+              {job.requirements && job.requirements.length > 0 && (
                 <div className="job-requirements">
                   <h4>Required Skills</h4>
                   <div className="skills-list">
