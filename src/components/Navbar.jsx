@@ -36,6 +36,12 @@ export default function Navbar() {
           >
             Dashboard
           </Link>
+          <Link
+            to="/privacy"
+            className={`navbar-link ${location.pathname === '/privacy' ? 'active' : ''}`}
+          >
+            Privacy
+          </Link>
 
           {user ? (
             <div className="navbar-user">
