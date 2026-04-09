@@ -57,6 +57,9 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    sessionStorage.removeItem('matchme_resumeData');
+    sessionStorage.removeItem('matchme_resumeText');
+    sessionStorage.removeItem('matchme_jobs');
     await supabase.auth.signOut();
   }
 

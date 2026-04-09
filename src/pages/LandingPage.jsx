@@ -1,9 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Target, Brain, TrendingUp, Shield, Zap, Upload } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 import './LandingPage.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const ctaTarget = user ? '/dashboard' : '/signup';
 
   const features = [
     {
@@ -44,7 +48,7 @@ export default function LandingPage() {
             what's missing, and exactly how to fix it.
           </p>
           <div className="hero-actions animate-fade-in-up delay-3">
-            <button className="btn btn-primary btn-lg" onClick={() => navigate('/dashboard')}>
+            <button className="btn btn-primary btn-lg" onClick={() => navigate(ctaTarget)}>
               <Upload size={18} /> Upload Your CV
             </button>
             <button className="btn btn-secondary btn-lg" onClick={() => {
@@ -145,7 +149,7 @@ export default function LandingPage() {
           <div className="cta-block animate-fade-in-up">
             <h2>Ready to see how you <span className="hero-highlight">really</span> stack up?</h2>
             <p>It takes less than a minute. No signup required.</p>
-            <button className="btn btn-primary btn-lg" onClick={() => navigate('/dashboard')}>
+            <button className="btn btn-primary btn-lg" onClick={() => navigate(ctaTarget)}>
               <Upload size={18} /> Analyze My CV Now
             </button>
           </div>
@@ -156,7 +160,7 @@ export default function LandingPage() {
       <footer className="footer">
         <div className="container footer-inner">
           <span className="footer-brand">Match Me!</span>
-          <span className="footer-copy">© 2025 Match Me!</span>
+          <span className="footer-copy">© 2026 Match Me!</span>
         </div>
       </footer>
     </main>

@@ -12,6 +12,7 @@ import InterviewHistoryPage from './pages/InterviewHistoryPage';
 import SavedJobsPage from './pages/SavedJobsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           } />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </AuthProvider>
